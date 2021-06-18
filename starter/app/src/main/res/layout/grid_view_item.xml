@@ -18,12 +18,15 @@
             style="@style/PrimaryText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{property.codename}"
             android:layout_marginTop="@dimen/item_margin"
-            app:layout_constraintHorizontal_bias="0.0"
+            android:layout_marginEnd="16dp"
+            android:text="@{property.codename}"
             app:layout_constraintBottom_toTopOf="@id/asteroid_close_approach_date"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/potentially_hazardous_indicator"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@id/asteroid_close_approach_date"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.0"
             tools:text="Codename" />
 
         <TextView
@@ -31,24 +34,30 @@
             style="@style/SecondaryText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@{property.closeApproachDate}"
+            android:layout_marginStart="16dp"
             android:layout_marginTop="@dimen/item_margin"
-            android:layout_marginBottom="@dimen/item_margin"
+            android:layout_marginEnd="16dp"
+            android:text="@{property.closeApproachDate}"
             app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/potentially_hazardous_indicator"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/asteroid_name"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Close approach date" />
 
         <ImageView
             android:id="@+id/potentially_hazardous_indicator"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
             android:layout_marginTop="@dimen/item_margin"
+            android:layout_marginEnd="8dp"
             android:contentDescription="@{property.potentiallyHazardous ? @string/potentially_hazardous_asteroid_image : @string/not_hazardous_asteroid_image}"
-            app:layout_constraintHorizontal_bias="0.8"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toEndOf="@+id/asteroid_close_approach_date"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.42000002"
             app:statusIcon="@{property.potentiallyHazardous}"
             tools:srcCompat="@drawable/ic_status_normal" />
 

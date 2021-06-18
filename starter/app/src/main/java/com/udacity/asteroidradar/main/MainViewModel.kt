@@ -5,9 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.api.AsteroidApi
-import com.udacity.asteroidradar.api.AsteroidFilter
+import com.udacity.asteroidradar.api.*
 import kotlinx.coroutines.launch
+import org.json.JSONObject
 import java.lang.Exception
 
 enum class AsteroidApiStatus {LOADING,ERROR,DONE}
@@ -38,24 +38,34 @@ class MainViewModel : ViewModel() {
     }
 
     init {
-        getAsteroidProperties(AsteroidFilter.START_DATE)
+        getAsteroidProperties()
     }
 
-    private fun getAsteroidProperties(filter: AsteroidFilter) {
+    private fun getAsteroidProperties() {
         viewModelScope.launch{
             _status.value=AsteroidApiStatus.LOADING
             try {
-                _properties.value = AsteroidApi.retrofitService.getProperties(filter.startDate,apiKey="tenXmXVEEyCENwPLBWNBDc7XuJkz5JYEdvM3XdnJ")
+                val startDate=getTodayDateFormattedDate()
+                val endDate =getOneWeekDateFormattedDate()
+
+                val asteroidsResult  = AsteroidApi.retrofitService.getProperties(
+                    startDate , endDate)
+
+                val parsedAsteroidsResult = parseAsteroidsJsonResult(JSONObject(asteroidsResult))
+                _properties.value=parsedAsteroidsResult
+
                 _status.value = AsteroidApiStatus.DONE
+
             }catch (e: Exception){
+                e.printStackTrace()
                 _status.value=AsteroidApiStatus.ERROR
                 _properties.value=ArrayList()
             }
         }
     }
 
-    fun updateFilter(filter:AsteroidFilter){
-        getAsteroidProperties(filter)
+    fun updateFilter(){
+        getAsteroidProperties()
     }
 
 }

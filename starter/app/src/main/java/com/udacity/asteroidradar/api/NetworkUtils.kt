@@ -4,6 +4,7 @@ import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterF
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.BuildConfig.API_KEY
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.Constants.BASE_URL
 import org.json.JSONObject
@@ -65,11 +66,21 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     return formattedDateList
 }
 
+fun getTodayDateFormattedDate(): String {
+    val calendar =  Calendar.getInstance()
+    val currentDate = calendar.time
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+    return dateFormat.format(currentDate)
+}
 
+fun getOneWeekDateFormattedDate(): String {
+    val calendar =  Calendar.getInstance()
+    calendar.add(Calendar.DAY_OF_YEAR, 7)
+    val currentDate = calendar.time
+    val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+    return dateFormat.format(currentDate)
+}
 
-var date = Calendar.getInstance()
-var today = date.get(Calendar.YEAR).toString()+"-"+date.get(Calendar.MONTH).toString()+"-"+date.get(Calendar.DAY_OF_MONTH).toString()
-enum class AsteroidFilter(val startDate: String,val apiKey:String){START_DATE(today,apiKey="tenXmXVEEyCENwPLBWNBDc7XuJkz5JYEdvM3XdnJ")}
 
 private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory())
     .build()
@@ -84,8 +95,8 @@ private val retrofit = Retrofit.Builder()
 interface AsteroidApiService {
 
     @GET("neo/rest/v1/feed")
-    suspend fun getProperties(@Query("start_date") startDate:String, @Query("api_key") apiKey: String="tenXmXVEEyCENwPLBWNBDc7XuJkz5JYEdvM3XdnJ"):
-            List<Asteroid>
+    suspend fun getProperties(@Query("start_date") startDate:String, @Query("end_date") endDate:String,@Query("api_key") apiKey: String = API_KEY):
+            String
 }
 
 object AsteroidApi {

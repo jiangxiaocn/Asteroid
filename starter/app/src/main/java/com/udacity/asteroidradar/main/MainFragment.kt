@@ -7,7 +7,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.udacity.asteroidradar.R
-import com.udacity.asteroidradar.api.AsteroidFilter
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.asteroidradar.databinding.GridViewItemBinding
 
@@ -44,7 +43,7 @@ class MainFragment : Fragment() {
         super.onCreateOptionsMenu(menu, inflater)
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+   /* override fun onOptionsItemSelected(item: MenuItem): Boolean {
         viewModel.updateFilter(
             when (item.itemId){
                 R.id.show_today_menu -> AsteroidFilter.START_DATE
@@ -52,6 +51,6 @@ class MainFragment : Fragment() {
                 else->AsteroidFilter.START_DATE
             }
         )
-        return true
-    }
+       return true
+    }*/
 }
