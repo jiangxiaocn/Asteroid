@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.udacity.asteroidradar.Asteroid
+import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.api.*
 import kotlinx.coroutines.launch
 import org.json.JSONObject
@@ -25,6 +26,11 @@ class MainViewModel : ViewModel() {
     val properties: LiveData<List<Asteroid>>
         get() = _properties
 
+    private val _image= MutableLiveData<PictureOfDay>()
+
+    val image:LiveData<PictureOfDay>
+        get() = _image
+
     val navigateToSelectedProperty: LiveData<Asteroid>
         get() = _navigateToSelectedProperty
 
@@ -39,6 +45,7 @@ class MainViewModel : ViewModel() {
 
     init {
         getAsteroidProperties()
+        getImageOfTheDay()
     }
 
     private fun getAsteroidProperties() {
@@ -53,13 +60,23 @@ class MainViewModel : ViewModel() {
 
                 val parsedAsteroidsResult = parseAsteroidsJsonResult(JSONObject(asteroidsResult))
                 _properties.value=parsedAsteroidsResult
-
                 _status.value = AsteroidApiStatus.DONE
 
             }catch (e: Exception){
                 e.printStackTrace()
                 _status.value=AsteroidApiStatus.ERROR
                 _properties.value=ArrayList()
+            }
+        }
+    }
+
+    private fun getImageOfTheDay() {
+        viewModelScope.launch{
+            try {
+                _image.value = AsteroidApi.pictureOfTheDayService.getImageOfTheDay()
+
+            }catch (e: Exception){
+                e.printStackTrace()
             }
         }
     }

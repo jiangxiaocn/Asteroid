@@ -5,8 +5,12 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.main.AsteroidAdapter
 import com.udacity.asteroidradar.main.AsteroidApiStatus
+import okhttp3.HttpUrl.get
+import java.lang.reflect.Array.get
+
 
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
@@ -65,4 +69,12 @@ fun bindStatus(statusImageView: ImageView, status: AsteroidApiStatus?) {
             statusImageView.visibility = View.GONE
         }
     }
+}
+
+@BindingAdapter("pictureOfTheDay")
+fun bindImageViewToPictureOfDay(imageView: ImageView, url: String?) {
+    Picasso.get().load(url)
+        .placeholder(R.drawable.placeholder_picture_of_day)
+        .error(R.drawable.placeholder_picture_of_day)
+        .into(imageView)
 }

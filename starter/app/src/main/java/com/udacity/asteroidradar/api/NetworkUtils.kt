@@ -7,6 +7,7 @@ import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.BuildConfig.API_KEY
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.Constants.BASE_URL
+import com.udacity.asteroidradar.PictureOfDay
 import org.json.JSONObject
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -99,8 +100,19 @@ interface AsteroidApiService {
             String
 }
 
+interface PictureOfTheDayService{
+
+    @GET("planetary/apod")
+    suspend fun getImageOfTheDay(@Query("api_key") apiKey: String = API_KEY):
+            PictureOfDay
+}
+
 object AsteroidApi {
     val retrofitService : AsteroidApiService by lazy {
         retrofit.create(AsteroidApiService::class.java)
     }
+    val pictureOfTheDayService by lazy {
+       retrofit.create(PictureOfTheDayService::class.java)
+    }
+
 }
