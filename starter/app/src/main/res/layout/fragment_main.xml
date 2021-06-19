@@ -31,7 +31,7 @@
                 android:adjustViewBounds="true"
                 android:scaleType="centerCrop"
                 app:srcCompat="@drawable/placeholder_picture_of_day"
-                app:pictureOfTheDay = "@{viewModel.image.url}"/>
+                app:pictureOfTheDay = "@{viewModel.picture.url}"/>
 
             <TextView
                 android:id="@+id/textView"
@@ -51,7 +51,7 @@
             android:layout_width="0dp"
             android:layout_height="0dp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:listData="@{viewModel.properties}"
+            app:listData="@{viewModel.asteroidList}"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"

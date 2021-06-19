@@ -1,40 +1,25 @@
 package com.udacity.asteroidradar.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import android.app.Application
+import androidx.lifecycle.*
+import com.example.android.devbyteviewer.repository.AsteroidsRepository
+import com.example.android.devbyteviewer.repository.PictureOfTheDayRepository
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.api.*
+import com.udacity.asteroidradar.database.getDatabase
+import com.udacity.asteroidradar.network.Network
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.lang.Exception
 
 enum class AsteroidApiStatus {LOADING,ERROR,DONE}
 
-class MainViewModel : ViewModel() {
-    // The internal MutableLiveData String that stores the status of the most recent request
-    private val _status= MutableLiveData<AsteroidApiStatus>()
+class MainViewModel(application: Application) : AndroidViewModel(application) {
 
-    // The external immutable LiveData for the request status String
-    val status: LiveData<AsteroidApiStatus>
-        get() = _status
-
-    private val _properties = MutableLiveData<List<Asteroid>>()
-
-    val properties: LiveData<List<Asteroid>>
-        get() = _properties
-
-    private val _image= MutableLiveData<PictureOfDay>()
-
-    val image:LiveData<PictureOfDay>
-        get() = _image
-
-    val navigateToSelectedProperty: LiveData<Asteroid>
-        get() = _navigateToSelectedProperty
-
-    private val _navigateToSelectedProperty = MutableLiveData<Asteroid>()
+    private val database = getDatabase(application)
+    private val asteroidsRepository = AsteroidsRepository(database)
+    private val pictureRepository = PictureOfTheDayRepository(database)
 
     fun displayPropertyDetails(asteroid: Asteroid) {
         _navigateToSelectedProperty.value = asteroid
@@ -43,46 +28,30 @@ class MainViewModel : ViewModel() {
         _navigateToSelectedProperty.value = null
     }
 
+    val navigateToSelectedProperty: LiveData<Asteroid>
+        get() = _navigateToSelectedProperty
+
+    private val _navigateToSelectedProperty = MutableLiveData<Asteroid>()
+    /**
+     * init{} is called immediately when this ViewModel is created.
+     */
     init {
-        getAsteroidProperties()
-        getImageOfTheDay()
-    }
-
-    private fun getAsteroidProperties() {
-        viewModelScope.launch{
-            _status.value=AsteroidApiStatus.LOADING
-            try {
-                val startDate=getTodayDateFormattedDate()
-                val endDate =getOneWeekDateFormattedDate()
-
-                val asteroidsResult  = AsteroidApi.retrofitService.getProperties(
-                    startDate , endDate)
-
-                val parsedAsteroidsResult = parseAsteroidsJsonResult(JSONObject(asteroidsResult))
-                _properties.value=parsedAsteroidsResult
-                _status.value = AsteroidApiStatus.DONE
-
-            }catch (e: Exception){
-                e.printStackTrace()
-                _status.value=AsteroidApiStatus.ERROR
-                _properties.value=ArrayList()
-            }
+        viewModelScope.launch {
+            asteroidsRepository.refreshAsteroids()
+            pictureRepository.refreshPictureOfTheDay()
         }
     }
+    val asteroidList = asteroidsRepository.asteroids
+    val picture = pictureRepository.pictureOfTheDay
 
-    private fun getImageOfTheDay() {
-        viewModelScope.launch{
-            try {
-                _image.value = AsteroidApi.pictureOfTheDayService.getImageOfTheDay()
-
-            }catch (e: Exception){
-                e.printStackTrace()
+    class Factory(val app: Application) : ViewModelProvider.Factory {
+        override fun <T : ViewModel?> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                @Suppress("UNCHECKED_CAST")
+                return MainViewModel(app) as T
             }
+            throw IllegalArgumentException("Unable to construct viewmodel")
         }
-    }
-
-    fun updateFilter(){
-        getAsteroidProperties()
     }
 
 }

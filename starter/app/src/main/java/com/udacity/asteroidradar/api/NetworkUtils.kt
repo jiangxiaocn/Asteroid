@@ -81,38 +81,3 @@ fun getOneWeekDateFormattedDate(): String {
     val dateFormat = SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
     return dateFormat.format(currentDate)
 }
-
-
-private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory())
-    .build()
-
-private val retrofit = Retrofit.Builder()
-    .addConverterFactory(ScalarsConverterFactory.create())
-    .addConverterFactory( MoshiConverterFactory.create(moshi))
-    .addCallAdapterFactory(CoroutineCallAdapterFactory())
-    .baseUrl(BASE_URL)
-    .build()
-
-interface AsteroidApiService {
-
-    @GET("neo/rest/v1/feed")
-    suspend fun getProperties(@Query("start_date") startDate:String, @Query("end_date") endDate:String,@Query("api_key") apiKey: String = API_KEY):
-            String
-}
-
-interface PictureOfTheDayService{
-
-    @GET("planetary/apod")
-    suspend fun getImageOfTheDay(@Query("api_key") apiKey: String = API_KEY):
-            PictureOfDay
-}
-
-object AsteroidApi {
-    val retrofitService : AsteroidApiService by lazy {
-        retrofit.create(AsteroidApiService::class.java)
-    }
-    val pictureOfTheDayService by lazy {
-       retrofit.create(PictureOfTheDayService::class.java)
-    }
-
-}
