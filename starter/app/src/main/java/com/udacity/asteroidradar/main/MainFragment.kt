@@ -1,11 +1,14 @@
 package com.udacity.asteroidradar.main
 
+import android.os.Build
 import android.os.Bundle
 import android.view.*
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.example.android.devbyteviewer.repository.AsteroidsRepository
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
@@ -21,6 +24,7 @@ class MainFragment : Fragment() {
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val binding = FragmentMainBinding.inflate(inflater)
@@ -50,14 +54,13 @@ class MainFragment : Fragment() {
     }
 
 
-   /* override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        viewModel.updateFilter(
+   @RequiresApi(Build.VERSION_CODES.O)
+   override fun onOptionsItemSelected(item: MenuItem): Boolean {
             when (item.itemId){
-                R.id.show_today_menu -> AsteroidFilter.START_DATE
-                R.id.show_week_menu -> AsteroidFilter.START_DATE
-                else->AsteroidFilter.START_DATE
+                R.id.show_today_menu -> viewModel.updateFilter(MainViewModel.MenuItemFilter.SHOW_TODAY)
+                R.id.show_week_menu -> viewModel.updateFilter(MainViewModel.MenuItemFilter.WEEK)
+                R.id.show_saved_menu -> viewModel.updateFilter(MainViewModel.MenuItemFilter.SAVED)
             }
-        )
        return true
-    }*/
+    }
 }

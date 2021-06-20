@@ -8,12 +8,13 @@ import com.udacity.asteroidradar.PictureOfDay
 import kotlinx.android.parcel.Parcelize
 
 /*Database object*/
-@Entity
+@Entity(tableName = "asteroid_table")
+@Parcelize
 data class AsteroidDatabaseEntity constructor(
         @PrimaryKey(autoGenerate = true) val id: Long, val codename: String, val closeApproachDate: String,
         val absoluteMagnitude: Double, val estimatedDiameter: Double,
         val relativeVelocity: Double, val distanceFromEarth: Double,
-        val isPotentiallyHazardous: Boolean)
+        val isPotentiallyHazardous: Boolean): Parcelable
 
 /*Transfer Database object to domain object*/
 fun List<AsteroidDatabaseEntity>.asDomainModel(): List<Asteroid> {
@@ -43,3 +44,24 @@ fun List<Asteroid>.asDatabaseModel(): Array<AsteroidDatabaseEntity> {
     }.toTypedArray()
 }
 
+
+@Entity(tableName = "picture_of_the_day_table")
+@Parcelize
+data class PictureEntity(@PrimaryKey(autoGenerate = true) val id: Long=0L,
+                         val mediaType: String, val title: String, val url: String) : Parcelable
+
+fun PictureOfDay.asDatabaseModel():PictureEntity{
+    return PictureEntity(
+            mediaType = this.mediaType,
+            title = this.title,
+            url = this.url
+    )
+}
+
+fun PictureEntity.asDomainModel():PictureOfDay{
+    return PictureOfDay(
+            mediaType = this.mediaType,
+            title = this.title,
+            url = this.url
+    )
+}

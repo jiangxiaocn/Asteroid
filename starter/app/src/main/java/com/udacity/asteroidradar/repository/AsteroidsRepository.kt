@@ -17,6 +17,8 @@
 
 package com.example.android.devbyteviewer.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.Asteroid
@@ -24,13 +26,16 @@ import com.udacity.asteroidradar.api.getOneWeekDateFormattedDate
 import com.udacity.asteroidradar.api.getTodayDateFormattedDate
 import com.udacity.asteroidradar.api.parseAsteroidsJsonResult
 import com.udacity.asteroidradar.database.AsteroidsDatabase
+import com.udacity.asteroidradar.database.asDatabaseModel
 import com.udacity.asteroidradar.database.asDomainModel
+import com.udacity.asteroidradar.main.MainViewModel
 import com.udacity.asteroidradar.network.Network
-import com.udacity.asteroidradar.network.asDatabaseModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONObject
+import timber.log.Timber
 import java.lang.Exception
+import java.time.LocalDate
 
 class AsteroidsRepository(private val database: AsteroidsDatabase) {
 
@@ -38,6 +43,12 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
             Transformations.map(database.asteroidDao.getAllAsteroid()) {
         it.asDomainModel()
     }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val _startDate = LocalDate.now()
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private val _endDate = _startDate.plusDays(7)
 
     /**
      * Refresh the asteroids stored in the offline cache.
@@ -60,7 +71,35 @@ class AsteroidsRepository(private val database: AsteroidsDatabase) {
 
                 database.asteroidDao.insertAll(*parsedAsteroidsResult.asDatabaseModel())
             }catch (e: Exception){
+                Timber.d("RefreshAsteroids failed ${e.message}")
                 e.printStackTrace()
+            }
+        }
+    }
+    suspend fun removeOldAsteroids(){
+        withContext(Dispatchers.IO){
+            database.asteroidDao.removeAsteroids(getTodayDateFormattedDate())
+        }
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getAsteroidSelection(filter: MainViewModel.MenuItemFilter): LiveData<List<Asteroid>> {
+        return when (filter) {
+            (MainViewModel.MenuItemFilter.SAVED) -> {
+                Transformations.map(database.asteroidDao.getAllAsteroid())
+                {
+                    it.asDomainModel()
+                }
+            }
+            (MainViewModel.MenuItemFilter.SHOW_TODAY) -> {
+                Transformations.map(database.asteroidDao.getTodaysAsteroids(_startDate.toString())) {
+                    it.asDomainModel()
+                }
+            }
+            else -> {
+                Transformations.map(database.asteroidDao.getWeeklyAsteroids(_startDate.toString(),_endDate.toString())) {
+                    it.asDomainModel()
+                }
             }
         }
     }

@@ -7,7 +7,6 @@ import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.squareup.picasso.Picasso
 import com.udacity.asteroidradar.main.AsteroidAdapter
-import com.udacity.asteroidradar.main.AsteroidApiStatus
 import okhttp3.HttpUrl.get
 import java.lang.reflect.Array.get
 
@@ -54,7 +53,7 @@ fun bindRecyclerView(recyclerView: RecyclerView, listData: List<Asteroid>?) {
     adapter.submitList(listData)
 }
 
-@BindingAdapter("asteroidApiStatus")
+/*@BindingAdapter("asteroidApiStatus")
 fun bindStatus(statusImageView: ImageView, status: AsteroidApiStatus?) {
     when (status) {
         AsteroidApiStatus.LOADING -> {
@@ -69,7 +68,7 @@ fun bindStatus(statusImageView: ImageView, status: AsteroidApiStatus?) {
             statusImageView.visibility = View.GONE
         }
     }
-}
+}*/
 
 @BindingAdapter("pictureOfTheDay")
 fun bindImageViewToPictureOfDay(imageView: ImageView, url: String?) {

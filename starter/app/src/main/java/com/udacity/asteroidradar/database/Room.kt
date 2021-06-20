@@ -1,31 +1,32 @@
 package com.udacity.asteroidradar.database
 
 import android.content.Context
+import android.graphics.Picture
 import androidx.lifecycle.LiveData
 import androidx.room.*
 
 /*For accessing data in database*/
 @Dao
 interface AsteroidDao {
-    @Query("select * from asteroiddatabaseentity order by date(closeApproachDate) asc")
+    @Query("select * from asteroid_table order by date(closeApproachDate) asc")
     fun getAllAsteroid(): LiveData<List<AsteroidDatabaseEntity>>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(vararg asteroids: AsteroidDatabaseEntity)
 
-    @Query("select * from asteroiddatabaseentity where closeApproachDate = :date")
+    @Query("select * from asteroid_table where closeApproachDate = :date")
     fun getTodaysAsteroids(date: String): LiveData<List<AsteroidDatabaseEntity>>
 
-    @Query("select * from asteroiddatabaseentity where closeApproachDate between :startDate and :endDate order by date(closeApproachDate) asc")
+    @Query("select * from asteroid_table where closeApproachDate between :startDate and :endDate order by date(closeApproachDate) asc")
     fun getWeeklyAsteroids(startDate: String, endDate: String) : LiveData<List<AsteroidDatabaseEntity>>
 
-    @Query("delete from asteroiddatabaseentity where closeApproachDate < :date")
+    @Query("delete from asteroid_table where closeApproachDate < :date")
     suspend fun removeAsteroids(date: String)
 
 }
 
 
-@Database(entities = [AsteroidDatabaseEntity::class], version = 1)
+@Database(entities = [AsteroidDatabaseEntity::class,PictureEntity::class], version = 1)
 abstract class AsteroidsDatabase : RoomDatabase() {
     abstract val asteroidDao:AsteroidDao
     abstract val pictureDao:PictureDao
@@ -46,13 +47,13 @@ fun getDatabase(context: Context): AsteroidsDatabase {
 
 @Dao
 interface PictureDao{
-    @Query("select * from pictureEntity")
+    @Query("select * from picture_of_the_day_table")
     fun getPictureOfTheDay() : LiveData<PictureEntity>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(vararg pictureEntity: PictureEntity)
 
-    @Query("Delete from pictureEntity")
-    fun  clear()
+    @Query("Delete from picture_of_the_day_table")
+    fun clear()
 }
 

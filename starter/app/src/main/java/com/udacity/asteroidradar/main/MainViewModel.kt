@@ -1,6 +1,8 @@
 package com.udacity.asteroidradar.main
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.*
 import com.example.android.devbyteviewer.repository.AsteroidsRepository
 import com.example.android.devbyteviewer.repository.PictureOfTheDayRepository
@@ -13,9 +15,11 @@ import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.lang.Exception
 
-enum class AsteroidApiStatus {LOADING,ERROR,DONE}
 
+
+@RequiresApi(Build.VERSION_CODES.O)
 class MainViewModel(application: Application) : AndroidViewModel(application) {
+    enum class MenuItemFilter {SAVED,SHOW_TODAY,WEEK}
 
     private val database = getDatabase(application)
     private val asteroidsRepository = AsteroidsRepository(database)
@@ -32,10 +36,22 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = _navigateToSelectedProperty
 
     private val _navigateToSelectedProperty = MutableLiveData<Asteroid>()
+    private var asteroidListLiveData: LiveData<List<Asteroid>>
+
+    private val _asteroidsList = MutableLiveData<List<Asteroid>>()
+    val asteroidsList: LiveData<List<Asteroid>>
+          get() = _asteroidsList
+    private val asteroidListObserver = Observer<List<Asteroid>> {
+        //Update new list to RecyclerView
+        _asteroidsList.value = it
+    }
     /**
      * init{} is called immediately when this ViewModel is created.
      */
     init {
+        asteroidListLiveData =
+                asteroidsRepository.getAsteroidSelection(MenuItemFilter.SAVED)
+        asteroidListLiveData.observeForever(asteroidListObserver)
         viewModelScope.launch {
             asteroidsRepository.refreshAsteroids()
             pictureRepository.refreshPictureOfTheDay()
@@ -52,6 +68,11 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
             }
             throw IllegalArgumentException("Unable to construct viewmodel")
         }
+    }
+    fun updateFilter(filter: MenuItemFilter) {
+        //Observe the new filtered LiveData
+        asteroidListLiveData = asteroidsRepository.getAsteroidSelection(filter)
+        asteroidListLiveData.observeForever(asteroidListObserver)
     }
 
 }

@@ -21,20 +21,19 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import com.udacity.asteroidradar.PictureOfDay
 import com.udacity.asteroidradar.database.AsteroidsDatabase
+import com.udacity.asteroidradar.database.asDatabaseModel
 import com.udacity.asteroidradar.database.asDomainModel
 import com.udacity.asteroidradar.network.Network
-import com.udacity.asteroidradar.network.asDatabaseModel
-import com.udacity.asteroidradar.network.asDomainModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.json.JSONObject
+import timber.log.Timber
 import java.lang.Exception
 
 class PictureOfTheDayRepository(private val database: AsteroidsDatabase) {
 
     val pictureOfTheDay: LiveData<PictureOfDay> =
             Transformations.map(database.pictureDao.getPictureOfTheDay()) {
-                it.asDomainModel()
+                it?.asDomainModel()
     }
 
     /**
@@ -56,6 +55,7 @@ class PictureOfTheDayRepository(private val database: AsteroidsDatabase) {
                     database.pictureDao.insertAll(picture.asDatabaseModel())
                 }
             }catch (e: Exception){
+                Timber.d("RefreshPictureOfTheDay failed ${e.message}")
                 e.printStackTrace()
             }
         }
