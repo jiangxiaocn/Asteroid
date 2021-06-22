@@ -36,29 +36,35 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
         get() = _navigateToSelectedProperty
 
     private val _navigateToSelectedProperty = MutableLiveData<Asteroid>()
-    private var asteroidListLiveData: LiveData<List<Asteroid>>
+
+  /*  private var asteroidListLiveData: LiveData<List<Asteroid>>*/
 
     private val _asteroidsList = MutableLiveData<List<Asteroid>>()
+
     val asteroidsList: LiveData<List<Asteroid>>
           get() = _asteroidsList
+
     private val asteroidListObserver = Observer<List<Asteroid>> {
         //Update new list to RecyclerView
         _asteroidsList.value = it
     }
+
+    var asteroidList = asteroidsRepository.asteroids
+    val picture = pictureRepository.pictureOfTheDay
+
     /**
      * init{} is called immediately when this ViewModel is created.
      */
     init {
-        asteroidListLiveData =
+        asteroidList =
                 asteroidsRepository.getAsteroidSelection(MenuItemFilter.SAVED)
-        asteroidListLiveData.observeForever(asteroidListObserver)
+        asteroidList.observeForever(asteroidListObserver)
+
         viewModelScope.launch {
             asteroidsRepository.refreshAsteroids()
             pictureRepository.refreshPictureOfTheDay()
         }
     }
-    val asteroidList = asteroidsRepository.asteroids
-    val picture = pictureRepository.pictureOfTheDay
 
     class Factory(val app: Application) : ViewModelProvider.Factory {
         override fun <T : ViewModel?> create(modelClass: Class<T>): T {
@@ -71,8 +77,8 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
     }
     fun updateFilter(filter: MenuItemFilter) {
         //Observe the new filtered LiveData
-        asteroidListLiveData = asteroidsRepository.getAsteroidSelection(filter)
-        asteroidListLiveData.observeForever(asteroidListObserver)
+        asteroidList = asteroidsRepository.getAsteroidSelection(filter)
+        asteroidList.observeForever(asteroidListObserver)
     }
 
 }
