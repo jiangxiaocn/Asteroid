@@ -22,4 +22,5 @@
     <string name="asteroidId">id</string>
     <string name="asteroidDate">2021-06-16</string>
     <string name="asteroidName">asteroid one</string>
+    <string name="listData">listData</string>
 </resources>

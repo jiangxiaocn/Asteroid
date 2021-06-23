@@ -46,11 +46,11 @@ fun bindTextViewToDisplayVelocity(textView: TextView, number: Double) {
     textView.text = String.format(context.getString(R.string.km_s_unit_format), number)
 }
 
-@BindingAdapter("listData")
+/*@BindingAdapter("listData")
 fun bindRecyclerView(recyclerView: RecyclerView, listData: List<Asteroid>?) {
     val adapter = recyclerView.adapter as AsteroidAdapter
     adapter.submitList(listData)
-}
+}*/
 
 /*@BindingAdapter("asteroidApiStatus")
 fun bindStatus(statusImageView: ImageView, status: AsteroidApiStatus?) {

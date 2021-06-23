@@ -56,6 +56,7 @@ class MainViewModel(application: Application) : AndroidViewModel(application) {
      * init{} is called immediately when this ViewModel is created.
      */
     init {
+
         asteroidList =
                 asteroidsRepository.getAsteroidSelection(MenuItemFilter.SAVED)
         asteroidList.observeForever(asteroidListObserver)

@@ -4,15 +4,18 @@ import android.os.Build
 import android.os.Bundle
 import android.view.*
 import androidx.annotation.RequiresApi
+import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.RecyclerView
 import com.example.android.devbyteviewer.repository.AsteroidsRepository
 import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
 import com.udacity.asteroidradar.databinding.GridViewItemBinding
+import kotlinx.android.synthetic.main.fragment_main.*
 
 class MainFragment : Fragment() {
 
@@ -41,9 +44,14 @@ class MainFragment : Fragment() {
                 viewModel.displayPropertyDetailsComplete()
             }
         })
+        viewModel.asteroidsList.observe(viewLifecycleOwner, Observer {
+            if ( null != it ) {
+                val adapter = asteroid_recycler.adapter as AsteroidAdapter
+                adapter.submitList(it)
+            }
+        })
 
         setHasOptionsMenu(true)
-
         return binding.root
     }
 
